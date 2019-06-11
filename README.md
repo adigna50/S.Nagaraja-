@@ -1,4 +1,6 @@
 # S.Nagaraja- I have taken data  from the below.
+  DASH BOARD LINK : http://rpubs.com/adigna50/503832 
+link of dash board 
  library("flexdashboard")
 library(knitr)
 library(DT)

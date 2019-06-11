@@ -1,0 +1,273 @@
+---
+title: "PRODUCT SALES REVENUE DASHBORD "
+output: 
+  flexdashboard::flex_dashboard:
+vertical_layout: fill
+social: [ "twitter", "facebook", "menu"]
+---
+
+```{r setup, include=FALSE}
+library("flexdashboard")
+library(knitr)
+library(DT)
+library(rpivotTable)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(openintro)
+library(highcharter)
+library(ggvis)
+library(gganimate)
+library(gifski)
+library(png)
+```
+```{r}
+data<- read.csv("C:\\Users\\SND\\Desktop\\Motor\\wa_sales of 2012-14.csv")
+```
+
+BASIC STATISTICS CHART {data-orientation=rows} 
+============================================================================
+row
+---------------------------------------------------------------------------------------------
+### United states 
+
+```{r}
+valueBox(sum(data$Retailer.country == "United States"),
+         icon = 'fa-building')
+```
+
+### JAPAN
+
+```{r}
+valueBox(sum(data$Retailer.country == "Japan"),
+         icon = 'fa-building')
+```
+
+### CHINA
+
+```{r}
+valueBox(sum(data$Retailer.country == "China"),
+         icon = 'fa-building')
+```
+
+### Canada
+
+```{r}
+valueBox(sum(data$Retailer.country == "Canada"),
+         icon = 'fa-building')
+```
+
+rows
+----------------------------------------------------------------------------------------------------------
+### Revenue of sales  by Quarter 
+
+```{r}
+
+plot_ly(data, labels = ~ Quarter, values = ~Revenue , type = 'pie',
+        textposition = 'inside', textinfo = 'label+percent') %>%
+    layout (title='Revenue Based on Quarter',
+            showlegend = TRUE)
+
+```
+
+### Revenue by Retailer country
+
+```{r}
+
+plot_ly(data, labels = ~  Retailer.country, values = ~Revenue , type = 'pie',
+        textposition = 'inside', textinfo = 'label+percent') %>%
+    layout (title='Revenue by Retailer country',
+            showlegend = TRUE)
+
+```
+
+### Gross Margin by Quarter
+```{r}
+
+plot_ly(data, labels =~Quarter, values =~Gross.margin, type = 'pie',
+        textposition = 'inside', textinfo = 'label+percent') %>%
+    layout (title='Gross Margin by Quarter',
+            showlegend = TRUE)
+```
+
+### Gross Margin by Retailer Country
+
+```{r}
+
+plot_ly(data, labels =~Retailer.country, values =~Gross.margin, type = 'pie',
+        textposition = 'inside', textinfo = 'label+percent') %>%
+    layout (title='Gross Margin by Retailer Country',
+            showlegend = TRUE)
+```
+
+rows
+-------------------------------------------------------------------------------------------------------
+### Bar chart Showing Revenue V/s  quarter by Countrys
+
+```{r}
+ggplot(data,aes(x=Quarter,y=Revenue, fill=Retailer.country))+geom_bar(position="dodge",stat="identity")+coord_flip()+
+
+ggtitle("Bar chart Showing Revenue V/s  quarter by Countrys")
+```
+                  
+### Bar chart showing Gross margin V/s  quarter by Countrys  
+
+```{r}
+ggplot(data,aes(x=Quarter,y=Gross.margin,fill=Retailer.country))+geom_bar(position="dodge",stat="identity")+coord_flip()+ggtitle("Bar chart showing Gross margin V/s  quarter by Countrys")
+
+```
+
+### Bar chart showing Revenue v/s Year 
+
+```{r}
+ggplot(data,aes(x=Year,y=Revenue, fill=Retailer.country))+geom_bar(position="dodge",stat="identity")+coord_flip()+
+
+ggtitle("Bar chart Showing Revenue V/s year by Countrys")
+```
+
+### Bar chart showing Gross margin v/s Year
+
+```{r}
+ggplot(data,aes(x=Year,y=Gross.margin,fill=Retailer.country))+geom_bar(position="dodge",stat="identity")+coord_flip()+ggtitle("Bar chart Showing Grossmargin V/s year by Countrys")
+
+```
+
+ADVANCE STATISTICS CHARTS {data-orientation=rows}
+==============================================================================
+rows
+------------------------------------------------------------------------------------
+### Total Revenue
+
+```{r}
+valueBox(round(sum(data$Revenue)),icon='fa-building')
+```
+
+### Total Gross margin
+
+```{r}
+valueBox(round(sum(data$Gross.margin)),icon='fa-area-chart')
+```
+
+###  Total Quantity of products 
+
+```{r}
+valueBox(sum(data$Quantity),icon = 'fa-building')
+```
+
+### Average revenue
+
+```{r}
+valueBox(round(mean(data$Revenue)),icon='fa-user')
+
+```
+
+### Average Gross margin
+
+```{r}
+valueBox(mean(data$Gross.margin),icon='fa-user')
+```
+
+### Average Quantity 
+
+```{r}
+valueBox(round(mean(data$Quantity)),icon='fa-user')
+```
+
+### DATA COUNT
+
+```{r}
+valueBox(length(data$Revenue),icon='fa-building')
+```
+
+row
+------------------------------------------------------------------------------------------------------------
+### Scatter plot Revenue by Year and country
+
+```{r}
+ggplot(data,aes(x=Year,y=Revenue,group=Retailer.country,color=Retailer.country))+ggtitle("Scatter plot Revenue by Year and country")+ geom_point() +geom_line() +theme_classic(base_size = 12)
+
+```
+
+### Scatter plot Gross margin by Year and country
+
+```{r}
+ggplot(data,aes(x=Year,y=Gross.margin,group=Retailer.country,color=Retailer.country))+ggtitle("Scatter plot GROSS by Year and country")+ geom_point() +geom_line() +theme_classic(base_size = 12)
+
+```
+
+### BUBBLE CHART SHOWING REVENUE V/S PRODUCT QUANTITY AND  PRODUCT Type
+
+```{r}
+ggplot(data, aes(x=Quantity, y=Revenue,  color=Product.type)) +ggtitle("REVENUE V/S PRODUCTQUANTITY ANDPRODUCT Type")+ geom_point()
+
+
+```
+
+### BUBBLE CHART SHOWING GRoss margin V/S PRODUCT QUANTITY AND  PRODUCT Type
+
+```{r}
+ggplot(data, aes(x=Quantity, y=Gross.margin,  color=Product.type)) +ggtitle("BUBBLE CHART SHOWING GRoss margin V/S PRODUCT QUANTITY AND  PRODUCT Type")+ geom_point()
+
+
+```
+
+row
+-------------------------------------------------------------------------------------------
+### BOX PLOT  Revenue  with Quarter
+
+```{r}
+p <- plot_ly(data,y= ~Revenue, color = ~Quarter, type = "box")%>%layout(title = "BOX PLOT  Revenue  with Quarter")
+p
+```
+
+### BOX PLOT  Quantity  with Quarter
+
+```{r}
+p <- plot_ly(data,y= ~Quantity, color = ~Quarter, type = "box")%>%layout(title = "BOX PLOT  Quantity with Quarter")
+p
+```
+
+Data Table
+========================================
+
+```{r}
+datatable(data,
+          caption = "SALES DATA",
+          rownames = T,
+          filter = "top",
+          options = list(pageLength = 25))
+```
+
+Pivot Table  {data-orientation=rows} 
+=========================================
+row
+----------------------------------------------------------------------------------
+```{r}
+rpivotTable(data,
+            aggregatorName = "Count",
+            cols= "Quantity",
+            rows = "Retailer.country",
+            rendererName = "Heatmap")
+```
+
+About Report
+=================================================
+rows
+------------------------------------------
+
+Report
+
+* This is a report on `r length(data$Revenue)` Revenue of  product sales.
+
+* The average Reveue was `r round(mean(data$Revenue))`.
+
+* The average Gross margin  was `r mean(data$Gross.margin)`.
+
+This report was generated on `r format(Sys.Date(), format = "%B %d, %Y")`.
+
+Data link : https://www.ibm.com/communities/analytics/watson-analytics-blog/sales-products-sample-data/
+
+Created by: S.Nagaraja Adiga  Application Data Scientist in CastSoftware Pvt LTD.
+
+It is one of sample Data  metioned in the above link.
+
